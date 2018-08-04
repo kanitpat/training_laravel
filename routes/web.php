@@ -19,6 +19,7 @@ Route::get('foo', function () {
 });
 
 Route::get('demoone', 'DemoController@index');
+
 Route::post('/demotwo', 'DemoController@demotwo');\
 Route::match(['get', 'post'], '/demothree', 'DemoController@demothree');
 
