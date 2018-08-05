@@ -10,6 +10,7 @@ class Product extends Model
     {
         return $this->belongsTo('App\Model\Shop');
     }
+    
 
 
 }

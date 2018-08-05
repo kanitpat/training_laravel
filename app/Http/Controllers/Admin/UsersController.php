@@ -65,7 +65,7 @@ class UsersController extends Controller
         
         // $mods = UserMod::all();
         // return view('test', compact('data','mods'));
-        $mods = UserMod::paginate(15);
+        $mods = UserMod::orderBy('id','desc')->paginate(10);
         return view('admin.user.lists', compact('mods') );
 
        
@@ -78,7 +78,8 @@ class UsersController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.user.create' );
+
     }
 
     /**
@@ -89,11 +90,55 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
+        // การตรวจสอบ
+           request()->validate([
+            'name' => 'required|min:2|max:50',
+            'surname' => 'required|min:2|max:50',
+            'mobile' => 'required|numeric',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'address' => 'required|min:6',
+            'age' => 'required|numeric',
+            'city' => 'required',
+            'confirm_password' => 'required|min:6|max:20|same:password',
+        ], [  //change alet defult
+            'name.required' => 'Name is required',
+            'mobile.required' => 'numeric is required',
+            'name.min' => 'Name must be at least 2 characters.',
+            'name.max' => 'Name should not be greater than 50 characters.',
+        ]);
+
         $mod = new UserMod;
-        $mod->name = $request->name;
-        $mod->email = $request->email;
+        $mod->email    = $request->email;
         $mod->password = bcrypt($request->password);
+        $mod->name     = $request->name;
+        $mod->surname  = $request->surname;
+        $mod->mobile   = $request->mobile;
+        $mod->age      = $request->age;
+        $mod->address  = $request->address;
+        $mod->city     = $request->city;
         $mod->save();
+
+        return redirect('admin/users')
+                    ->with('success', 'User ['.$request->name.'] created successfully.');
+
+
+
+         // $mod = new UserMod;
+         // $mod->name = $request->name;
+         // $mod->email = $request->email;
+         // $mod->password = bcrypt($request->password);
+         // $mod->remember_token = bcrypt($request->confirm_password);
+         // $mod->surname = $request->surname;
+         // $mod->mobile = $request->mobile;
+         // $mod->age = $request->age;
+         // $mod->address = $request->address;
+         // $mod->city = $request->city;
+
+
+        
+        //  $mod->save();
+        // echo "add data to store " ;
 
 
     }
@@ -136,7 +181,11 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        //
+        $item = UserMod::find($id);
+        // echo "edit";
+        return view('admin.user.edit', compact('item') );
+
+
     }
 
     /**
@@ -148,12 +197,45 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // $mod = UserMod::find($id);
+        // $mod->name = $request->name;
+        // $mod->email = $request->email;
+        // $mod->password = bcrypt($request->password);
+        // $mod->save();
+        // echo " Update Success";
+
+            request()->validate([
+            'name' => 'required|min:2|max:50',
+            'surname' => 'required|min:2|max:50',
+            'mobile' => 'required|numeric',
+            'password' => 'required|min:6',
+            'address' => 'required|min:6',
+            'age' => 'required|numeric',
+            'city' => 'required',
+            'confirm_password' => 'required|min:6|max:20|same:password',
+        ], [
+            'name.required' => 'Name is required',
+            'name.min' => 'Name must be at least 2 characters.',
+            'name.max' => 'Name should not be greater than 50 characters.',
+        ]);
+
         $mod = UserMod::find($id);
-        $mod->name = $request->name;
-        $mod->email = $request->email;
-        $mod->password = bcrypt($request->password);
+        $mod->name     = $request->name;
+        $mod->surname  = $request->surname;
+        //$mod->email    = $request->email;
+        $mod->mobile   = $request->mobile;
+        $mod->surname  = $request->surname;
+        $mod->age      = $request->age;
+        $mod->address  = $request->address;
+        $mod->city     = $request->city;
         $mod->save();
-        echo " Update Success";
+
+        return redirect('admin/users')
+                    ->with('success', 'User ['.$request->name.'] updated successfully.');
+
+
+
+
 
 
     }
@@ -168,7 +250,9 @@ class UsersController extends Controller
     {
         $mod = UserMod::find($id);
         $mod->delete();
-        echo " Delete Success";
+        return redirect('admin/users');
+
+        // echo " Delete Success";
 
     }
 }
